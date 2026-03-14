@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lebancho — Embroidered Streetwear</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f3f0;
+    --red: #c8272a;
+    --gray: #1a1a1a;
+    --mid: #2a2a2a;
+    --text-muted: #888;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── Custom cursor ── */
+  #cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--red);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform .15s ease, width .2s, height .2s, background .2s;
+    mix-blend-mode: normal;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(200,39,42,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform .35s ease, width .25s, height .25s;
+  }
+  body:has(a:hover) #cursor, body:has(button:hover) #cursor { width: 20px; height: 20px; }
+  body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 50px; height: 50px; }
+
+  /* ── Noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9990;
+    opacity: 0.5;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 999;
+    padding: 24px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    mix-blend-mode: normal;
+    transition: background .3s, padding .3s;
+  }
+  nav.scrolled {
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: var(--white);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-right {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .nav-right a { color: var(--white); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; }
+  .cart-btn {
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    padding: 10px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: background .2s, transform .15s;
+  }
+  .cart-btn:hover { background: #a01f22; transform: scale(0.98); }
+
+  /* ── Hero ── */
+  #hero {
+    position: relative;
+    height: 100vh;
+    display: flex; align-items: center;
+    overflow: hidden;
+    background: var(--black);
+  }
+  .hero-bg-text {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(180px, 22vw, 340px);
+    color: rgba(255,255,255,0.03);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: -0.03em;
+    user-select: none;
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 48px;
+    max-width: 700px;
+    animation: fadeUp .8s ease both;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+    font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--red);
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block;
+    width: 24px; height: 1.5px; background: var(--red);
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 150px);
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+  .hero-title span { color: var(--red); }
+  .hero-sub {
+    font-size: 1rem; color: var(--text-muted);
+    line-height: 1.7; max-width: 420px;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+  .hero-cta-group { display: flex; align-items: center; gap: 20px; }
+  .btn-primary {
+    display: inline-block;
+    background: var(--red);
+    color: var(--white);
+    text-decoration: none;
+    padding: 16px 40px;
+    font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    transition: background .2s, transform .15s;
+  }
+  .btn-primary:hover { background: #a01f22; transform: translateY(-2px); }
+  .btn-ghost {
+    display: inline-block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2px;
+    transition: color .2s, border-color .2s;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: var(--white); }
+
+  /* Hero image grid (right side) */
+  .hero-images {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 42%;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    overflow: hidden;
+  }
+  .hero-img-block {
+    background: var(--mid);
+    overflow: hidden;
+    position: relative;
+  }
+  .hero-img-block:first-child {
+    grid-row: 1 / 3;
+    background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+  }
+  .hero-img-block::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(10,10,10,0.7));
+  }
+  .hero-scroll-hint {
+    position: absolute; bottom: 40px; left: 48px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted);
+    animation: fadeIn 1.2s ease both .8s;
+  }
+  .scroll-line {
+    width: 40px; height: 1px; background: var(--red);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: ''; position: absolute;
+    height: 100%; width: 30px; background: var(--white);
+    animation: scanline 2s linear infinite;
+  }
+  @keyframes scanline { from { left: -30px; } to { left: 100%; } }
+  .hero-stat {
+    position: absolute; bottom: 40px; right: 50%;
+    transform: translateX(50%);
+    text-align: center;
+    z-index: 3;
+  }
+  .hero-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem; color: var(--white); line-height: 1;
+  }
+  .hero-stat-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+
+  /* ── Marquee ── */
+  .marquee-wrap {
+    overflow: hidden;
+    background: var(--red);
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 22s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    display: flex; align-items: center; gap: 40px;
+    padding-right: 60px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; letter-spacing: 0.1em; white-space: nowrap; color: var(--white);
+  }
+  .marquee-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4); }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── Collections section ── */
+  #collections { padding: 120px 48px; }
+  .section-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 60px;
+  }
+  .section-tag {
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 100px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+  .section-title .outline {
+    -webkit-text-stroke: 1.5px var(--white);
+    color: transparent;
+  }
+  .view-all {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--text-muted); text-decoration: none;
+    font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+    transition: color .2s;
+    flex-shrink: 0; margin-bottom: 8px;
+  }
+  .view-all::after { content: '→'; transition: transform .2s; }
+  .view-all:hover { color: var(--white); }
+  .view-all:hover::after { transform: translateX(4px); }
+
+  /* Product grid */
+  .product-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 3px;
+  }
+  .product-card {
+    position: relative; overflow: hidden;
+    background: var(--gray);
+    cursor: none;
+  }
+  .product-card:first-child {
+    grid-row: 1 / 3;
+    min-height: 600px;
+  }
+  .product-card:not(:first-child) { min-height: 295px; }
+  .product-img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform .6s ease;
+  }
+  .product-card:hover .product-img { transform: scale(1.06); }
+  .product-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+  }
+  .placeholder-icon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem; color: rgba(255,255,255,0.05);
+  }
+  .product-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 24px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+    transform: translateY(10px); opacity: 0;
+    transition: transform .3s ease, opacity .3s ease;
+  }
+  .product-card:hover .product-info { transform: translateY(0); opacity: 1; }
+  .product-badge {
+    display: inline-block;
+    background: var(--red); color: var(--white);
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 4px 10px; margin-bottom: 8px;
+  }
+  .product-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem;
+    letter-spacing: 0.03em;
+  }
+  .product-price { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+  .product-overlay-tag {
+    position: absolute; top: 20px; left: 20px;
+    background: rgba(10,10,10,0.75);
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 5px 12px; backdrop-filter: blur(6px);
+  }
+
+  /* ── USP — Embroidery section ── */
+  #embroidery {
+    padding: 120px 48px;
+    background: var(--gray);
+    position: relative;
+    overflow: hidden;
+  }
+  #embroidery::before {
+    content: 'STITCH';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26vw; color: rgba(255,255,255,0.02);
+    bottom: -2vw; left: -1vw; pointer-events: none;
+    letter-spacing: -0.04em; user-select: none;
+  }
+  .embroidery-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .embroidery-left .section-tag { margin-bottom: 16px; }
+  .embroidery-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+  }
+  .embroidery-title em { font-style: normal; color: var(--red); }
+  .embroidery-desc {
+    font-size: 1rem; line-height: 1.8; color: var(--text-muted);
+    font-weight: 300; max-width: 420px;
+    margin-bottom: 48px;
+  }
+  .embroidery-features {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .feature-row {
+    display: flex; align-items: center; gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .feature-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem; color: var(--red); line-height: 1;
+    min-width: 48px;
+  }
+  .feature-text-title { font-size: 0.9rem; font-weight: 500; margin-bottom: 2px; }
+  .feature-text-sub { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* Embroidery visual */
+  .embroidery-right {
+    position: relative;
+  }
+  .emb-showcase {
+    background: var(--black);
+    padding: 60px 40px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    min-height: 480px;
+    overflow: hidden;
+  }
+  .emb-thread-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    opacity: 0.08;
+  }
+  .emb-logo-large {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(48px, 6vw, 80px);
+    color: var(--white);
+    position: relative; z-index: 1;
+    text-shadow: 0 0 60px rgba(200,39,42,0.2);
+  }
+  .emb-tag {
+    position: relative; z-index: 1;
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .emb-corners {
+    position: absolute;
+    width: 30px; height: 30px;
+    border-color: var(--red);
+    border-style: solid;
+    opacity: 0.5;
+  }
+  .emb-corners.tl { top: 20px; left: 20px; border-width: 1.5px 0 0 1.5px; }
+  .emb-corners.tr { top: 20px; right: 20px; border-width: 1.5px 1.5px 0 0; }
+  .emb-corners.bl { bottom: 20px; left: 20px; border-width: 0 0 1.5px 1.5px; }
+  .emb-corners.br { bottom: 20px; right: 20px; border-width: 0 1.5px 1.5px 0; }
+
+  /* ── New Drops ── */
+  #drops {
+    padding: 120px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  #drops::before {
+    content: 'NEW';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30vw;
+    color: rgba(255,255,255,0.015);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none; user-select: none; letter-spacing: -0.04em;
+  }
+  .drops-header { margin-bottom: 60px; }
+  .drops-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+  }
+  .drop-card {
+    background: var(--gray);
+    overflow: hidden;
+    position: relative;
+    cursor: none;
+  }
+  .drop-card-img {
+    height: 360px;
+    background: var(--mid);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .drop-card-img .placeholder-icon { font-size: 4rem; }
+  .drop-img-hover {
+    position: absolute; inset: 0; background: rgba(200,39,42,0.1);
+    opacity: 0; transition: opacity .3s;
+  }
+  .drop-card:hover .drop-img-hover { opacity: 1; }
+  .drop-card:hover .drop-card-img::after {
+    content: 'QUICK ADD +';
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--red); color: var(--white);
+    font-size: 0.65rem; letter-spacing: 0.15em;
+    padding: 8px 20px; white-space: nowrap;
+    animation: fadeUp .2s ease;
+  }
+  .drop-info { padding: 16px 20px; }
+  .drop-name { font-weight: 500; font-size: 0.9rem; margin-bottom: 4px; }
+  .drop-type { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px; }
+  .drop-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 0.05em;
+  }
+  .drop-tag-new {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--red); color: var(--white);
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 3px 8px;
+  }
+
+  /* ── Categories ── */
+  #categories {
+    padding: 80px 48px;
+    background: var(--gray);
+  }
+  .cats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-top: 60px;
+  }
+  .cat-card {
+    position: relative;
+    padding: 48px;
+    background: var(--black);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    min-height: 280px;
+    overflow: hidden;
+    cursor: none;
+    transition: background .3s;
+  }
+  .cat-card::before {
+    content: attr(data-letter);
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 10rem;
+    color: rgba(255,255,255,0.04);
+    top: 50%; right: 20px; transform: translateY(-50%);
+    line-height: 1; pointer-events: none; user-select: none;
+    transition: color .3s;
+  }
+  .cat-card:hover { background: var(--mid); }
+  .cat-card:hover::before { color: rgba(200,39,42,0.08); }
+  .cat-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem; letter-spacing: 0.03em;
+    margin-bottom: 8px;
+  }
+  .cat-count { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.1em; }
+  .cat-arrow {
+    position: absolute; top: 48px; right: 48px;
+    color: var(--red); font-size: 1.2rem;
+    transition: transform .2s;
+  }
+  .cat-card:hover .cat-arrow { transform: translate(4px, -4px); }
+
+  /* ── Testimonial/brand banner ── */
+  #brand-strip {
+    padding: 100px 48px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  #brand-strip::before {
+    content: '';
+    position: absolute; top: 0; left: 48px; right: 48px;
+    height: 1px; background: var(--border);
+  }
+  #brand-strip::after {
+    content: '';
+    position: absolute; bottom: 0; left: 48px; right: 48px;
+    height: 1px; background: var(--border);
+  }
+  .strip-quote {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    max-width: 900px; margin: 0 auto 32px;
+  }
+  .strip-quote span { color: var(--red); }
+  .strip-sub {
+    font-size: 0.85rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* ── Newsletter ── */
+  #newsletter {
+    padding: 100px 48px;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 60px;
+  }
+  .nl-left { flex: 1; }
+  .nl-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 0.9; letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .nl-sub { font-size: 0.9rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
+  .nl-form {
+    flex: 1; display: flex; gap: 0;
+    max-width: 500px;
+  }
+  .nl-input {
+    flex: 1;
+    background: rgba(0,0,0,0.2); color: var(--white);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 16px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .nl-input::placeholder { color: rgba(255,255,255,0.45); }
+  .nl-input:focus { border-color: rgba(255,255,255,0.5); }
+  .nl-btn {
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    padding: 16px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: none; transition: background .2s;
+  }
+  .nl-btn:hover { background: #111; }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--black);
+    padding: 80px 48px 40px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+  }
+  .footer-brand-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.5rem; color: var(--white);
+    margin-bottom: 20px; display: block;
+  }
+  .footer-tagline { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; max-width: 280px; }
+  .footer-col h4 {
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul a {
+    color: var(--text-muted); text-decoration: none;
+    font-size: 0.85rem; transition: color .2s;
+  }
+  .footer-col ul a:hover { color: var(--white); }
+  .footer-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border); padding-top: 32px;
+  }
+  .footer-copy { font-size: 0.75rem; color: var(--text-muted); }
+  .social-links { display: flex; gap: 16px; }
+  .social-links a {
+    color: var(--text-muted); text-decoration: none;
+    font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+    transition: color .2s;
+  }
+  .social-links a:hover { color: var(--white); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: .1s; }
+  .reveal-delay-2 { transition-delay: .2s; }
+  .reveal-delay-3 { transition-delay: .3s; }
+  .reveal-delay-4 { transition-delay: .4s; }
+
+  /* Embroidery thread SVG */
+  .thread-svg line {
+    stroke-dasharray: 6 4;
+    animation: threadMove 3s linear infinite;
+  }
+  @keyframes threadMove { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -40; } }
+
+  @media (max-width: 1024px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { display: none; }
+    #hero { flex-direction: column; height: auto; padding-top: 120px; }
+    .hero-content { padding: 60px 24px; max-width: 100%; }
+    .hero-images { position: relative; width: 100%; height: 300px; grid-template-rows: 1fr; grid-template-columns: repeat(3, 1fr); }
+    .hero-images .hero-img-block:first-child { grid-row: 1; grid-column: 1; }
+    .product-grid { grid-template-columns: 1fr 1fr; }
+    .product-card:first-child { grid-row: 1 / 2; grid-column: 1 / 3; min-height: 300px; }
+    .drops-grid { grid-template-columns: repeat(2, 1fr); }
+    .embroidery-inner { grid-template-columns: 1fr; gap: 40px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    #newsletter { flex-direction: column; }
+    .nl-form { max-width: 100%; }
+    .cats-grid { grid-template-columns: 1fr 1fr; }
+    #collections, #embroidery, #drops, #categories, #brand-strip, #newsletter { padding: 80px 24px; }
+    footer { padding: 60px 24px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Lebancho</a>
+  <ul class="nav-links">
+    <li><a href="#collections">Collections</a></li>
+    <li><a href="#drops">New Drops</a></li>
+    <li><a href="#embroidery">Craft</a></li>
+    <li><a href="#categories">Shop</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="#">Search</a>
+    <button class="cart-btn">Bag (0)</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">STREET</div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">New Collection 2026</div>
+    <h1 class="hero-title">
+      WEAR<br>
+      YOUR<br>
+      <span>CRAFT</span>
+    </h1>
+    <p class="hero-sub">
+      Every stitch is a statement. Lebancho brings hand-grade embroidery to streetwear — clothes, shoes, and caps built for those who live authentically.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#drops" class="btn-primary">Shop New Drops</a>
+      <a href="#embroidery" class="btn-ghost">Our Craft</a>
+    </div>
+  </div>
+
+  <div class="hero-images">
+    <div class="hero-img-block" style="background: linear-gradient(160deg,#1e1e1e,#0d0d0d); display:flex;align-items:center;justify-content:center; overflow:hidden;">
+      <div style="text-align:center;">
+        <div style="font-family:'Dancing Script',cursive;font-size:3rem;color:rgba(255,255,255,0.12);line-height:1">Leb</div>
+        <div style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.08);margin-top:8px">Embroidery Craft</div>
+      </div>
+    </div>
+    <div class="hero-img-block" style="background:linear-gradient(135deg,#1a0f0f,#0d0d0d);display:flex;align-items:center;justify-content:center;">
+      <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+        <circle cx="30" cy="30" r="28" stroke="rgba(200,39,42,0.15)" stroke-width="1" stroke-dasharray="4 4"/>
+        <circle cx="30" cy="30" r="18" stroke="rgba(200,39,42,0.08)" stroke-width="1"/>
+        <circle cx="30" cy="30" r="4" fill="rgba(200,39,42,0.3)"/>
+      </svg>
+    </div>
+    <div class="hero-img-block" style="background:linear-gradient(135deg,#0f1a0f,#0d0d0d);display:flex;align-items:center;justify-content:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:rgba(255,255,255,0.06);letter-spacing:0.05em;">STR</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <div class="marquee-item">Embroidered Hoodies <div class="marquee-dot"></div> Premium Caps <div class="marquee-dot"></div> Streetwear Tees <div class="marquee-dot"></div> Shoes &amp; Kicks <div class="marquee-dot"></div> Limited Drops <div class="marquee-dot"></div> Embroidery Craft <div class="marquee-dot"></div> Jaipur Made <div class="marquee-dot"></div> Wear Your Art <div class="marquee-dot"></div></div>
+    <div class="marquee-item" aria-hidden="true">Embroidered Hoodies <div class="marquee-dot"></div> Premium Caps <div class="marquee-dot"></div> Streetwear Tees <div class="marquee-dot"></div> Shoes &amp; Kicks <div class="marquee-dot"></div> Limited Drops <div class="marquee-dot"></div> Embroidery Craft <div class="marquee-dot"></div> Jaipur Made <div class="marquee-dot"></div> Wear Your Art <div class="marquee-dot"></div></div>
+  </div>
+</div>
+
+<!-- COLLECTIONS -->
+<section id="collections">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">— Featured</div>
+      <h2 class="section-title">COLLEC<br><span class="outline">TIONS</span></h2>
+    </div>
+    <a href="#" class="view-all">View All</a>
+  </div>
+
+  <div class="product-grid">
+    <!-- Big card -->
+    <div class="product-card reveal">
+      <div class="product-placeholder" style="height:100%;min-height:600px;background:linear-gradient(160deg,#1a1a1a,#0f0f0f);">
+        <div style="text-align:center;padding:40px;">
+          <div style="font-family:'Dancing Script',cursive;font-size:5rem;color:rgba(255,255,255,0.07);line-height:1;margin-bottom:20px;">Leb</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:rgba(255,255,255,0.08);letter-spacing:0.15em;">SIGNATURE HOODIE</div>
+        </div>
+      </div>
+      <div class="product-overlay-tag">SS26</div>
+      <div class="product-info">
+        <div class="product-badge">Bestseller</div>
+        <div class="product-name">Signature Embroidery Hoodie</div>
+        <div class="product-price">₹2,499 — Available in 6 colours</div>
+      </div>
+    </div>
+
+    <!-- Small cards -->
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-placeholder" style="height:100%;min-height:295px;background:linear-gradient(160deg,#1a0f0f,#110a0a);">
+        <div class="placeholder-icon" style="color:rgba(200,39,42,0.08);">CAP</div>
+        <div style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.04)">Snapback</div>
+      </div>
+      <div class="product-overlay-tag">Caps</div>
+      <div class="product-info">
+        <div class="product-badge">New</div>
+        <div class="product-name">Script Logo Cap</div>
+        <div class="product-price">₹899</div>
+      </div>
+    </div>
+
+    <div class="product-card reveal reveal-delay-2">
+      <div class="product-placeholder" style="height:100%;min-height:295px;background:linear-gradient(160deg,#0f1a0f,#0a110a);">
+        <div class="placeholder-icon" style="color:rgba(255,255,255,0.05);">TEE</div>
+      </div>
+      <div class="product-overlay-tag">Tees</div>
+      <div class="product-info">
+        <div class="product-badge">Limited</div>
+        <div class="product-name">Embroidered Crewneck Tee</div>
+        <div class="product-price">₹1,199</div>
+      </div>
+    </div>
+
+    <div class="product-card reveal reveal-delay-3">
+      <div class="product-placeholder" style="height:100%;min-height:295px;background:linear-gradient(160deg,#0f0f1a,#0a0a11);">
+        <div class="placeholder-icon" style="color:rgba(255,255,255,0.05);">KCK</div>
+      </div>
+      <div class="product-overlay-tag">Shoes</div>
+      <div class="product-info">
+        <div class="product-badge">Drop</div>
+        <div class="product-name">Emb. Canvas Kicks</div>
+        <div class="product-price">₹3,299</div>
+      </div>
+    </div>
+
+    <div class="product-card reveal reveal-delay-4">
+      <div class="product-placeholder" style="height:100%;min-height:295px;background:linear-gradient(160deg,#1a100a,#110a07);">
+        <div class="placeholder-icon" style="color:rgba(255,255,255,0.05);">JKT</div>
+      </div>
+      <div class="product-overlay-tag">Jackets</div>
+      <div class="product-info">
+        <div class="product-name">Patchwork Bomber</div>
+        <div class="product-price">₹4,199</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EMBROIDERY USP -->
+<section id="embroidery">
+  <div class="embroidery-inner">
+    <div class="embroidery-left reveal">
+      <div class="section-tag">— Our Signature</div>
+      <h2 class="embroidery-title">THE ART OF<br><em>STITCH</em></h2>
+      <p class="embroidery-desc">
+        At Lebancho, embroidery isn't a detail — it's the design. Every piece passes through skilled hands in Jaipur, where each thread is placed with intention. We're not printing patterns; we're weaving identity into fabric.
+      </p>
+      <div class="embroidery-features">
+        <div class="feature-row">
+          <div class="feature-num">01</div>
+          <div>
+            <div class="feature-text-title">Hand-Grade Precision</div>
+            <div class="feature-text-sub">Each design is embroidered with 40-weight thread across a minimum of 5,000 stitches.</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-num">02</div>
+          <div>
+            <div class="feature-text-title">Original Artwork</div>
+            <div class="feature-text-sub">Every motif is an original Lebancho design — no licensed graphics, no repeats.</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-num">03</div>
+          <div>
+            <div class="feature-text-title">Wash-Proof Durability</div>
+            <div class="feature-text-sub">Industrial-grade lock stitch ensures your embroidery outlasts the garment itself.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="embroidery-right reveal reveal-delay-2">
+      <div class="emb-showcase">
+        <!-- Thread background SVG -->
+        <svg class="emb-thread-bg" viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
+          <line class="thread-svg" x1="0" y1="80" x2="400" y2="80" stroke="#c8272a" stroke-width="0.8" stroke-dasharray="6 4"/>
+          <line class="thread-svg" x1="0" y1="160" x2="400" y2="160" stroke="#c8272a" stroke-width="0.8" stroke-dasharray="6 4" style="animation-delay:-1.5s"/>
+          <line class="thread-svg" x1="0" y1="240" x2="400" y2="240" stroke="#c8272a" stroke-width="0.8" stroke-dasharray="6 4" style="animation-delay:-0.8s"/>
+          <line class="thread-svg" x1="0" y1="320" x2="400" y2="320" stroke="#c8272a" stroke-width="0.8" stroke-dasharray="6 4" style="animation-delay:-2s"/>
+          <line class="thread-svg" x1="0" y1="400" x2="400" y2="400" stroke="#c8272a" stroke-width="0.8" stroke-dasharray="6 4" style="animation-delay:-0.3s"/>
+          <line x1="80" y1="0" x2="80" y2="480" stroke="rgba(255,255,255,0.3)" stroke-width="0.4" stroke-dasharray="4 8"/>
+          <line x1="200" y1="0" x2="200" y2="480" stroke="rgba(255,255,255,0.3)" stroke-width="0.4" stroke-dasharray="4 8"/>
+          <line x1="320" y1="0" x2="320" y2="480" stroke="rgba(255,255,255,0.3)" stroke-width="0.4" stroke-dasharray="4 8"/>
+        </svg>
+
+        <div class="emb-corners tl"></div>
+        <div class="emb-corners tr"></div>
+        <div class="emb-corners bl"></div>
+        <div class="emb-corners br"></div>
+
+        <div class="emb-tag">Signature Script</div>
+        <div class="emb-logo-large">Lebancho</div>
+        <div class="emb-tag">Est. Jaipur — Embroidery First</div>
+
+        <!-- Stitch count badge -->
+        <div style="display:flex;gap:32px;margin-top:20px;position:relative;z-index:1;">
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red);">5K+</div>
+            <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Stitches</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red);">100%</div>
+            <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Original</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+          <div style="text-align:center;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red);">∞</div>
+            <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Washes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEW DROPS -->
+<section id="drops">
+  <div class="drops-header reveal">
+    <div class="section-tag">— Just Dropped</div>
+    <h2 class="section-title">FRESH<br><span class="outline">DROPS</span></h2>
+  </div>
+  <div class="drops-grid">
+
+    <div class="drop-card reveal">
+      <div class="drop-card-img" style="background:linear-gradient(160deg,#1e1212,#100a0a);">
+        <div class="placeholder-icon" style="color:rgba(200,39,42,0.1);font-size:5rem;">HOD</div>
+        <div class="drop-img-hover"></div>
+      </div>
+      <div class="drop-tag-new">New</div>
+      <div class="drop-info">
+        <div class="drop-name">Crimson Thread Hoodie</div>
+        <div class="drop-type">Hoodie · M, L, XL, XXL</div>
+        <div class="drop-price">₹ 2,799</div>
+      </div>
+    </div>
+
+    <div class="drop-card reveal reveal-delay-1">
+      <div class="drop-card-img" style="background:linear-gradient(160deg,#121e12,#0a100a);">
+        <div class="placeholder-icon" style="color:rgba(255,255,255,0.05);font-size:5rem;">CAP</div>
+        <div class="drop-img-hover"></div>
+      </div>
+      <div class="drop-tag-new">New</div>
+      <div class="drop-info">
+        <div class="drop-name">Leb Snapback — Forest</div>
+        <div class="drop-type">Cap · One Size</div>
+        <div class="drop-price">₹ 999</div>
+      </div>
+    </div>
+
+    <div class="drop-card reveal reveal-delay-2">
+      <div class="drop-card-img" style="background:linear-gradient(160deg,#12121e,#0a0a10);">
+        <div class="placeholder-icon" style="color:rgba(255,255,255,0.05);font-size:5rem;">TEE</div>
+        <div class="drop-img-hover"></div>
+      </div>
+      <div class="drop-tag-new">Limited</div>
+      <div class="drop-info">
+        <div class="drop-name">Monogram Oversized Tee</div>
+        <div class="drop-type">T-Shirt · S, M, L, XL</div>
+        <div class="drop-price">₹ 1,399</div>
+      </div>
+    </div>
+
+    <div class="drop-card reveal reveal-delay-3">
+      <div class="drop-card-img" style="background:linear-gradient(160deg,#1a1408,#100d05);">
+        <div class="placeholder-icon" style="color:rgba(255,255,255,0.05);font-size:5rem;">SHO</div>
+        <div class="drop-img-hover"></div>
+      </div>
+      <div class="drop-tag-new">Drop</div>
+      <div class="drop-info">
+        <div class="drop-name">Stitch Runner Low-Top</div>
+        <div class="drop-type">Shoes · UK 6–11</div>
+        <div class="drop-price">₹ 3,799</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">— Shop by Category</div>
+      <h2 class="section-title">EXPLORE</h2>
+    </div>
+  </div>
+  <div class="cats-grid">
+    <div class="cat-card" data-letter="H" style="cursor:none">
+      <div class="cat-arrow">↗</div>
+      <div class="cat-title">Hoodies &amp; Sweatshirts</div>
+      <div class="cat-count">24 Styles Available</div>
+    </div>
+    <div class="cat-card" data-letter="T" style="cursor:none">
+      <div class="cat-arrow">↗</div>
+      <div class="cat-title">Tees &amp; Tops</div>
+      <div class="cat-count">38 Styles Available</div>
+    </div>
+    <div class="cat-card" data-letter="C" style="cursor:none">
+      <div class="cat-arrow">↗</div>
+      <div class="cat-title">Caps &amp; Hats</div>
+      <div class="cat-count">16 Styles Available</div>
+    </div>
+    <div class="cat-card" data-letter="S" style="cursor:none">
+      <div class="cat-arrow">↗</div>
+      <div class="cat-title">Shoes &amp; Footwear</div>
+      <div class="cat-count">12 Styles Available</div>
+    </div>
+    <div class="cat-card" data-letter="J" style="cursor:none">
+      <div class="cat-arrow">↗</div>
+      <div class="cat-title">Jackets &amp; Outerwear</div>
+      <div class="cat-count">8 Styles Available</div>
+    </div>
+    <div class="cat-card" data-letter="A" style="cursor:none">
+      <div class="cat-arrow">↗</div>
+      <div class="cat-title">Accessories</div>
+      <div class="cat-count">20 Styles Available</div>
+    </div>
+  </div>
+</section>
+
+<!-- BRAND STATEMENT -->
+<section id="brand-strip">
+  <p class="strip-quote reveal">
+    NOT JUST CLOTHES.<br>EMBROIDERED <span>IDENTITY.</span>
+  </p>
+  <p class="strip-sub reveal">Handcrafted in Jaipur — Worn Worldwide</p>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+  <div class="nl-left reveal">
+    <h2 class="nl-title">GET FIRST ACCESS</h2>
+    <p class="nl-sub">Drop notifications, early access, and exclusive embroidery previews — delivered straight to you.</p>
+  </div>
+  <div class="nl-form reveal reveal-delay-2">
+    <input type="email" class="nl-input" placeholder="Your email address">
+    <button class="nl-btn">Join The Drop →</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <span class="footer-brand-name">Lebancho</span>
+      <p class="footer-tagline">Streetwear built on embroidery craft. Every piece is an original — designed in Jaipur, worn everywhere.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">New Drops</a></li>
+        <li><a href="#">Hoodies</a></li>
+        <li><a href="#">Tees</a></li>
+        <li><a href="#">Caps</a></li>
+        <li><a href="#">Shoes</a></li>
+        <li><a href="#">Accessories</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <ul>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Embroidery Process</a></li>
+        <li><a href="#">Size Guide</a></li>
+        <li><a href="#">Care Instructions</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="#">Shipping &amp; Returns</a></li>
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">FAQ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Lebancho. All rights reserved. Embroidered in Jaipur.</p>
+    <div class="social-links">
+      <a href="#">Instagram</a>
+      <a href="#">WhatsApp</a>
+      <a href="#">Pinterest</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Sticky nav
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+</script>
+</body>
+</html>
